@@ -1,0 +1,269 @@
+﻿@page "/Index"
+@model IndexModel
+@using System.Linq
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+        color: #333;
+    }
+
+    .container {
+        width: 80%;
+        margin: 0 auto;
+        padding: 30px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        font-size: 2rem;
+        color: #4CAF50;
+        margin-bottom: 15px;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .form-label {
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+        .form-control:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: #4CAF50;
+    }
+
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+
+    .btn-success {
+        background-color: #28a745;
+    }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+    .btn-danger {
+        background-color: #dc3545;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+    .mb-4 {
+        margin-bottom: 20px;
+    }
+
+    .mt-4 {
+        margin-top: 20px;
+    }
+
+    .text-danger {
+        color: #dc3545;
+    }
+</style>
+
+<div class="container">
+    <h2>User List</h2>
+
+    <div class="mb-4">
+        <p><strong>Total Users: @Model.Users.Count()</strong></p>
+    </div>
+
+    @if (Model.Users.Any())
+
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+
+                {
+                    <tr>
+                        <td>@user.Name</td>
+                        <td>@user.Email</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    else
+
+    {
+        <p class="alert alert-warning">No users found.</p>
+    }
+
+    <hr />
+
+    <h3>Add New User</h3>
+    @if (!ViewData.ModelState.IsValid)
+
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
+
+    @if (ViewData["ValidationErrors"] != null)
+
+    {
+        <div class="alert alert-warning">
+            @foreach (var error in ViewData["ValidationErrors"] as List<string>)
+
+            {
+                <p>@error</p>
+            }
+        </div>
+    }
+
+    @if (ViewData["SuccessMessage"] != null)
+
+    {
+        <div class="alert alert-success">
+            <p>@ViewData["SuccessMessage"]</p>
+        </div>
+    }
+
+    <form method="post" asp-page-handler="AddUser" class="mt-4">
+        <div>
+            <label asp-for="NewUser.Name" class="form-label">Name</label>
+            <input asp-for="NewUser.Name" class="form-control" />
+            <span asp-validation-for="NewUser.Name" class="text-danger"></span>
+        </div>
+
+        <div>
+            <label asp-for="NewUser.Email" class="form-label">Email</label>
+            <input asp-for="NewUser.Email" class="form-control" />
+            <span asp-validation-for="NewUser.Email" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add User</button>
+    </form>
+
+    <hr />
+
+    <h3>Edit User</h3>
+    <form method="post" asp-page-handler="EditUser" class="mt-4">
+        <div>
+            <label asp-for="EditUser.Id" class="form-label">User ID</label>
+            <input asp-for="EditUser.Id" class="form-control" />
+        </div>
+
+        <div>
+            <label asp-for="EditUser.Name" class="form-label">Name</label>
+            <input asp-for="EditUser.Name" class="form-control" />
+        </div>
+
+        <div>
+            <label asp-for="EditUser.Email" class="form-label">Email</label>
+            <input asp-for="EditUser.Email" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Update</button>
+    </form>
+
+    <hr />
+
+    <h3>Delete User</h3>
+    <form method="post" asp-page-handler="DeleteUser" class="mt-4">
+        <div>
+            <label for="DeleteUserId" class="form-label">User ID to delete</label>
+            <input asp-for="DeleteUserId" placeholder="Enter User ID" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
